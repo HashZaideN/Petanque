@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </radialGradient>
+
+    <!-- Boule 1 Metallic Gradient (Team Blue Tint) -->
+    <radialGradient id="bouleBlueGrad" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="15%" stop-color="#93c5fd"/>
+      <stop offset="45%" stop-color="#3b82f6"/>
+      <stop offset="75%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+
+    <!-- Boule 2 Metallic Gradient (Team Red Tint) -->
+    <radialGradient id="bouleRedGrad" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="15%" stop-color="#fca5a5"/>
+      <stop offset="45%" stop-color="#ef4444"/>
+      <stop offset="75%" stop-color="#991b1b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+
+    <!-- Cochonnet Gradient (Bright Amber/Orange) -->
+    <radialGradient id="jackGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="30%" stop-color="#f59e0b"/>
+      <stop offset="85%" stop-color="#b45309"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </radialGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="shadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- App Rounded Base Frame -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="510" height="510" x="1" y="1" rx="111" fill="none" stroke="#334155" stroke-width="2" opacity="0.6"/>
+
+  <!-- Field Terrain Subtle Arc -->
+  <path d="M 0,380 Q 256,410 512,380 L 512,512 L 0,512 Z" fill="#0b0f17" opacity="0.8"/>
+
+  <!-- Boule 1 (Blue / Équipe 1 - Background/Left) -->
+  <g filter="url(#shadow)">
+    <!-- Shadow on ground -->
+    <ellipse cx="190" cy="380" rx="90" ry="24" fill="#000" opacity="0.5"/>
+    <circle cx="190" cy="270" r="105" fill="url(#bouleBlueGrad)"/>
+
+    <!-- Boule Grooves (Stries de pétanque) -->
+    <path d="M 120,230 Q 190,200 260,230" fill="none" stroke="#60a5fa" stroke-width="4.5" opacity="0.75"/>
+    <path d="M 112,270 Q 190,240 268,270" fill="none" stroke="#60a5fa" stroke-width="4.5" opacity="0.75"/>
+    <path d="M 120,310 Q 190,280 260,310" fill="none" stroke="#60a5fa" stroke-width="4.5" opacity="0.75"/>
+  </g>
+
+  <!-- Boule 2 (Red / Équipe 2 - Foreground/Right) -->
+  <g filter="url(#shadow)">
+    <!-- Shadow on ground -->
+    <ellipse cx="320" cy="400" rx="95" ry="26" fill="#000" opacity="0.6"/>
+    <circle cx="320" cy="290" r="110" fill="url(#bouleRedGrad)"/>
+
+    <!-- Boule Grooves -->
+    <path d="M 245,250 Q 320,220 395,250" fill="none" stroke="#f87171" stroke-width="5" opacity="0.75"/>
+    <path d="M 238,290 Q 320,260 402,290" fill="none" stroke="#f87171" stroke-width="5" opacity="0.75"/>
+    <path d="M 245,330 Q 320,300 395,330" fill="none" stroke="#f87171" stroke-width="5" opacity="0.75"/>
+  </g>
+
+  <!-- Cochonnet / Le But (Foreground Center-Bottom) -->
+  <g filter="url(#shadow)">
+    <!-- Shadow -->
+    <ellipse cx="256" cy="430" rx="35" ry="12" fill="#000" opacity="0.7"/>
+    <circle cx="256" cy="390" r="32" fill="url(#jackGrad)"/>
+    <!-- Specular highlight -->
+    <ellipse cx="246" cy="380" rx="10" ry="7" fill="#ffffff" opacity="0.8" transform="rotate(-30, 246, 380)"/>
+  </g>
+
+  <!-- Number 13 Badge (Score de la gagne) -->
+  <g filter="url(#softGlow)" transform="translate(370, 70)">
+    <circle cx="40" cy="40" r="38" fill="#eab308"/>
+    <circle cx="40" cy="40" r="34" fill="#ca8a04"/>
+    <text x="40" y="49" font-family="-apple-system, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle" letter-spacing="-1">13</text>
+  </g>
+</svg>

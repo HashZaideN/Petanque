@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#121417">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pétanque">
+  <meta name="description" content="Marqueur de score pour parties de pétanque sur smartphone, sans pub et utilisable 100% hors-ligne.">
+
+  <title>Pétanque Score</title>
+
+  <!-- PWA & Favicon -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- En-tête / Barre d'actions smartphone -->
+    <header class="app-header">
+      <div class="header-brand">
+        <svg class="header-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="10" cy="11" r="7" stroke="#3b82f6"/>
+          <circle cx="16" cy="13" r="6" stroke="#ef4444"/>
+          <circle cx="13" cy="19" r="2.5" fill="#f59e0b" stroke="#d97706"/>
+        </svg>
+        <h1 class="app-title">Pétanque Score</h1>
+      </div>
+
+      <nav class="header-tools" aria-label="Contrôles rapides">
+        <!-- Mode Plein Soleil (Contraste Extrême pour extérieur) -->
+        <button id="btn-sunlight" class="btn-icon" aria-label="Basculer le mode Plein Soleil" title="Plein soleil">
+          ☀️
+        </button>
+
+        <!-- Garder l'écran allumé (Screen Wake Lock API) -->
+        <button id="btn-wakelock" class="btn-icon" aria-label="Garder l'écran allumé" title="Garder l'écran allumé">
+          💡
+        </button>
+
+        <!-- Retours Sonores & Haptiques -->
+        <button id="btn-sound" class="btn-icon active" aria-label="Activer ou couper le son et vibrations" title="Son & Haptique">
+          🔊
+        </button>
+
+        <!-- Historique de la partie (Popup) -->
+        <button id="btn-history" class="btn-icon" aria-label="Historique de la partie" title="Historique de la partie">
+          📜
+        </button>
+
+        <!-- Annuler la dernière action (Undo) -->
+        <button id="btn-undo" class="btn-icon" aria-label="Annuler le dernier point" title="Annuler (Undo)" disabled>
+          ↩️
+        </button>
+
+        <!-- Réinitialisation de la partie -->
+        <button id="btn-reset" class="btn-icon btn-reset" aria-label="Nouvelle partie" title="Nouvelle partie (Remise à 0)">
+          🔄
+        </button>
+
+        <!-- Purge complète de la mémoire -->
+        <button id="btn-purge" class="btn-icon btn-purge" aria-label="Purger toute la mémoire" title="Purger toute la mémoire (Scores & Équipes)">
+          🗑️
+        </button>
+      </nav>
+    </header>
+
+    <!-- Zone principale : confrontation des 2 équipes -->
+    <main class="scoreboard">
+      <!-- Équipe A (Bleu) -->
+      <section class="team-panel team-a" data-team="0">
+        <div class="team-info" id="team-info-0" role="button" tabindex="0" aria-label="Modifier l'équipe 1">
+          <div class="team-header-row">
+            <span class="team-badge badge-a">Équipe A</span>
+            <span class="edit-hint">✏️ Modifier</span>
+          </div>
+          <div class="team-name" id="name-0">Équipe 1</div>
+          <div class="team-players" id="players-0">Pas de joueur renseigné</div>
+        </div>
+
+        <div class="score-container">
+          <div class="score-display" id="score-0" aria-live="polite">0</div>
+          <span class="score-target">/ 13 pts</span>
+        </div>
+
+        <div class="mene-input-group" aria-label="Saisie des points de la mène">
+          <div class="mene-stepper">
+            <button type="button" class="btn-mene-step btn-mene-minus" data-action="mene-minus" data-team="0" aria-label="Diminuer les points de la mène pour l'Équipe 1">−</button>
+            <div class="mene-count-display">
+              <span class="mene-val" id="mene-val-0">1</span>
+              <span class="mene-unit" id="mene-unit-0">pt</span>
+            </div>
+            <button type="button" class="btn-mene-step btn-mene-plus" data-action="mene-plus" data-team="0" aria-label="Augmenter les points de la mène pour l'Équipe 1">+</button>
+          </div>
+          <button type="button" class="btn-validate-mene" data-action="validate-mene" data-team="0" id="btn-validate-0" aria-label="Valider la mène pour l'Équipe 1">
+            <span class="validate-icon">✓</span> Valider (<span id="validate-pts-0">+1 pt</span>)
+          </button>
+        </div>
+      </section>
+
+      <!-- Barre de séparation & Info mènes -->
+      <div class="score-separator">
+        <div class="mene-pill" id="mene-indicator" role="button" tabindex="0" title="Informations de la mène">
+          <span class="mene-label">MÈNE <strong id="mene-count">1</strong></span>
+          <span class="mene-diff" id="score-diff">Égalité</span>
+        </div>
+      </div>
+
+      <!-- Équipe B (Rouge) -->
+      <section class="team-panel team-b" data-team="1">
+        <div class="team-info" id="team-info-1" role="button" tabindex="0" aria-label="Modifier l'équipe 2">
+          <div class="team-header-row">
+            <span class="team-badge badge-b">Équipe B</span>
+            <span class="edit-hint">✏️ Modifier</span>
+          </div>
+          <div class="team-name" id="name-1">Équipe 2</div>
+          <div class="team-players" id="players-1">Pas de joueur renseigné</div>
+        </div>
+
+        <div class="score-container">
+          <div class="score-display" id="score-1" aria-live="polite">0</div>
+          <span class="score-target">/ 13 pts</span>
+        </div>
+
+        <div class="mene-input-group" aria-label="Saisie des points de la mène">
+          <div class="mene-stepper">
+            <button type="button" class="btn-mene-step btn-mene-minus" data-action="mene-minus" data-team="1" aria-label="Diminuer les points de la mène pour l'Équipe 2">−</button>
+            <div class="mene-count-display">
+              <span class="mene-val" id="mene-val-1">1</span>
+              <span class="mene-unit" id="mene-unit-1">pt</span>
+            </div>
+            <button type="button" class="btn-mene-step btn-mene-plus" data-action="mene-plus" data-team="1" aria-label="Augmenter les points de la mène pour l'Équipe 2">+</button>
+          </div>
+          <button type="button" class="btn-validate-mene" data-action="validate-mene" data-team="1" id="btn-validate-1" aria-label="Valider la mène pour l'Équipe 2">
+            <span class="validate-icon">✓</span> Valider (<span id="validate-pts-1">+1 pt</span>)
+          </button>
+        </div>
+      </section>
+    </main>
+
+
+
+    <!-- Bannière / Notification de victoire (13 points) -->
+    <div id="victory-banner" class="victory-banner hidden" role="dialog" aria-modal="true" aria-labelledby="winner-text">
+      <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+      <div class="victory-content">
+        <button type="button" id="btn-victory-close-x" class="btn-close-icon victory-close-x" aria-label="Fermer et consulter la partie">✕</button>
+        <span class="trophy" aria-hidden="true">🏆</span>
+        <div id="winner-text" class="winner-text">Victoire !</div>
+
+        <!-- Grand affichage du score demandé par l'utilisateur -->
+        <div class="victory-score-board" id="victory-score-board">
+          <div class="victory-score-card winner" id="victory-card-0">
+            <span class="victory-team-name" id="victory-name-0">Équipe 1</span>
+            <span class="victory-team-points" id="victory-pts-0">13</span>
+          </div>
+          <div class="victory-score-divider">-</div>
+          <div class="victory-score-card" id="victory-card-1">
+            <span class="victory-team-name" id="victory-name-1">Équipe 2</span>
+            <span class="victory-team-points" id="victory-pts-1">0</span>
+          </div>
+        </div>
+
+        <p id="winner-details" class="winner-details">Score final 13 - 0</p>
+
+        <div class="victory-actions">
+          <button type="button" id="btn-view-results" class="btn-secondary">
+            📜 Consulter la partie & les mènes
+          </button>
+          <button type="button" id="btn-new-game" class="btn-primary">
+            🔄 Nouvelle partie (0 - 0)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Popup d'historique de la partie -->
+    <dialog id="history-dialog" class="team-dialog history-dialog" aria-labelledby="history-dialog-title">
+      <div class="dialog-header">
+        <div>
+          <h2 id="history-dialog-title">📜 Historique des mènes</h2>
+          <div class="history-dialog-subtitle"><span id="history-count">0</span> mène(s) jouée(s)</div>
+        </div>
+        <button type="button" id="btn-close-history" class="btn-close-icon" aria-label="Fermer l'historique">✕</button>
+      </div>
+
+      <div class="history-dialog-body">
+        <ul id="history-list" class="history-list">
+          <li class="history-empty">Aucun point marqué pour l'instant.</li>
+        </ul>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="btn-export-file" type="button" class="btn-secondary btn-export-history" title="Télécharger la partie dans un fichier JSON">
+          💾 Enregistrer (.json)
+        </button>
+        <button type="button" id="btn-history-ok" class="btn-primary">Fermer</button>
+      </div>
+    </dialog>
+
+    <!-- Modal d'édition d'une équipe -->
+    <dialog id="team-dialog" class="team-dialog">
+      <form method="dialog" id="team-form" class="team-form">
+        <div class="dialog-header">
+          <h2 id="dialog-team-title">Modifier l'équipe</h2>
+          <button type="button" id="btn-dialog-close-x" class="btn-close-icon" aria-label="Fermer">✕</button>
+        </div>
+
+        <label for="input-team-name">Nom de l'équipe</label>
+        <input type="text" id="input-team-name" maxlength="25" required autocomplete="off" placeholder="Ex: Les Tireurs du Sud">
+
+        <fieldset class="players-group">
+          <legend>Joueurs (1 à 3 optionnels)</legend>
+          <div class="player-input-row">
+            <span class="player-num">1</span>
+            <input type="text" id="input-player-1" placeholder="Pointeur / Tireur (optionnel)" maxlength="20" autocomplete="off">
+          </div>
+          <div class="player-input-row">
+            <span class="player-num">2</span>
+            <input type="text" id="input-player-2" placeholder="Milieu (optionnel)" maxlength="20" autocomplete="off">
+          </div>
+          <div class="player-input-row">
+            <span class="player-num">3</span>
+            <input type="text" id="input-player-3" placeholder="Capitaine (optionnel)" maxlength="20" autocomplete="off">
+          </div>
+        </fieldset>
+
+        <div class="dialog-actions">
+          <button type="button" id="btn-cancel-dialog" class="btn-secondary">Annuler</button>
+          <button type="submit" id="btn-save-dialog" class="btn-primary">Valider</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Modal de confirmation de purge complète -->
+    <dialog id="purge-dialog" class="team-dialog purge-dialog" aria-labelledby="purge-dialog-title">
+      <div class="dialog-header">
+        <h2 id="purge-dialog-title">Purger la mémoire ?</h2>
+        <button type="button" id="btn-purge-close-x" class="btn-close-icon" aria-label="Fermer">✕</button>
+      </div>
+
+      <div class="purge-dialog-body">
+        <p class="purge-warning-badge">⚠️ Action irréversible</p>
+        <p class="purge-dialog-text">
+          Toutes les informations enregistrées seront définitivement effacées :
+        </p>
+        <ul class="purge-items-list">
+          <li>Scores et mènes en cours</li>
+          <li>Noms des équipes et tous les joueurs</li>
+          <li>Historique complet de la partie</li>
+          <li>Mémoire sauvegardée sur cet appareil</li>
+        </ul>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" id="btn-cancel-purge" class="btn-secondary">Annuler</button>
+        <button type="button" id="btn-confirm-purge" class="btn-danger">Purger tout</button>
+      </div>
+    </dialog>
+
+    <!-- Toast Notification (Wake lock, messages de confirmation) -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
